@@ -1,4 +1,6 @@
+import os
 import re
+import sys
 
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -13,13 +15,17 @@ from selenium.common.exceptions import NoSuchElementException
 from webdriver_manager.chrome import ChromeDriverManager
 address = "https://www.piugame.com/"
 # browser = webdriver.Chrome(service=Service(ChromeDriverManager(version="114.0.5735.90").install()))
-browser = webdriver.Chrome(ChromeDriverManager().install())
+if(getattr(sys,"frozen",False) and hasattr(sys,"_MEIPASS")):
+        chromedriver_path = os.path.join(sys._MEIPASS,"chromedriver.exe")
+        browser = webdriver.Chrome(chromedriver_path)
+else:
+    browser = webdriver.Chrome(ChromeDriverManager().install())
 chrome_options = Options()
 chrome_options.add_experimental_option("detach", True)
 browser.get(address)
 
 incom = []
-
+f=open("Entity01.txt", "a+")
 while(1):
     try:
         web_element = browser.find_element(By.CLASS_NAME, 'login_wrap')
@@ -75,6 +81,13 @@ while(1):
                     ra = ra[len(ra)-1].replace('.png','')
                     rr = rr[len(rr) - 1].replace('.png', '')
 
+
+                    f.write(songname + "\n")
+                    f.write(score + "\n")
+                    f.write(st + "\n")
+                    f.write(re.sub(r'[^0-9]', '', sl1) + re.sub(r'[^0-9]', '', sl2) + "\n")
+                    f.write(ra + "\n")
+
                     print(songname)
                     print(score)
                     print(st)
@@ -85,7 +98,7 @@ while(1):
 
             #############################################
 
-
+            f.close()
     except UnexpectedAlertPresentException:
         print("알람")
         time.sleep(1)
